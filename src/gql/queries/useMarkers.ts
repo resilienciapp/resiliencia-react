@@ -1,16 +1,14 @@
 import { gql, useQuery } from '@apollo/client'
-import { Marker } from './generated/graphql'
+import { Marker } from '../../generated/graphql'
+import { MarkerFragment } from '../fragments/marker'
 
 const MarkersQuery = gql`
   query markers {
     markers {
-      description
-      id
-      latitude
-      longitude
-      name
+      ...Marker
     }
   }
+  ${MarkerFragment}
 `
 
 interface Result {

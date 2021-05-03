@@ -1,0 +1,22 @@
+.location-marker {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.location-marker-input {
+  border: 1px solid gray;
+  border-radius: 3px;
+  margin-bottom: 7%;
+}
+
+.location-marker-input-error {
+  border: 1px solid red;
+  border-radius: 3px;
+  margin-bottom: 7%;
+}
+
+.location-marker-input-label {
+  color: red;
+}

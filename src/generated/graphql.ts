@@ -15,10 +15,21 @@ export type Scalars = {
 };
 
 
+export type AddMarkerInput = {
+  description?: Maybe<Scalars['String']>;
+  latitude: Scalars['Float'];
+  longitude: Scalars['Float'];
+  name: Scalars['String'];
+};
+
 export enum CacheControlScope {
   Public = 'PUBLIC',
   Private = 'PRIVATE'
 }
+
+export type ConfirmMarkerInput = {
+  id: Scalars['Int'];
+};
 
 export type Marker = {
   __typename?: 'Marker';
@@ -26,11 +37,43 @@ export type Marker = {
   id: Scalars['Int'];
   latitude: Scalars['Float'];
   longitude: Scalars['Float'];
-  name?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  state: MarkerState;
+};
+
+export enum MarkerState {
+  Live = 'LIVE',
+  Finished = 'FINISHED'
+}
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  addMarker: Marker;
+  confirmMarker: Marker;
+  removeMarker: Marker;
+};
+
+
+export type MutationAddMarkerArgs = {
+  input: AddMarkerInput;
+};
+
+
+export type MutationConfirmMarkerArgs = {
+  input: ConfirmMarkerInput;
+};
+
+
+export type MutationRemoveMarkerArgs = {
+  input: RemoveMarkerInput;
 };
 
 export type Query = {
   __typename?: 'Query';
   markers: Array<Marker>;
+};
+
+export type RemoveMarkerInput = {
+  id: Scalars['Int'];
 };
 
