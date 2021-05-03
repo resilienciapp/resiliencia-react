@@ -25,8 +25,21 @@ export const useAddMarker = () => {
   const [mutate] = useMutation<Response, MutationAddMarkerArgs>(
     AddMarkerMutation,
     {
-      onCompleted: () => displaySuccess([{ title: 'Éxito' }]),
-      onError: error => displayError([{ title: error.message }]),
+      onCompleted: () =>
+        displaySuccess([
+          {
+            description: strings.successDescription,
+            title: strings.successTitle,
+          },
+        ]),
+      onError: () =>
+        displayError([
+          {
+            description: strings.errorDescription,
+            title: strings.successDescription,
+          },
+        ]),
+      refetchQueries: ['markers'],
     },
   )
 
@@ -39,4 +52,11 @@ export const useAddMarker = () => {
   }
 
   return { addMarker }
+}
+
+const strings = {
+  errorDescription: 'No se pudo agregar el marcador.',
+  errorTitle: 'Error',
+  successDescription: 'El marcador fue agregado con éxito.',
+  successTitle: 'Éxito',
 }

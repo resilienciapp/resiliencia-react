@@ -24,7 +24,7 @@ interface DisplayableMessage {
 
 interface Message {
   description?: string
-  title: string
+  title?: string
 }
 
 interface Context {

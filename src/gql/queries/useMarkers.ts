@@ -17,12 +17,39 @@ const MarkersQuery = gql`
 `
 
 export const useMarkers = () => {
-  const { displayError } = useError()
-  const { error, data } = useQuery<Result>(MarkersQuery)
-
-  if (error) {
-    displayError([{ title: error.message }])
-  }
+  const { displayError, displayInformation, displaySuccess } = useError()
+  const { data } = useQuery<Result>(MarkersQuery, {
+    onCompleted: data =>
+      data.markers.length
+        ? displaySuccess([
+            {
+              description: strings.successDescription,
+              title: strings.successTitle,
+            },
+          ])
+        : displayInformation([
+            {
+              description: strings.informationDescription,
+              title: strings.informationTitle,
+            },
+          ]),
+    onError: () =>
+      displayError([
+        {
+          description: strings.errorDescription,
+          title: strings.successDescription,
+        },
+      ]),
+  })
 
   return data
+}
+
+const strings = {
+  errorDescription: 'No se pudo confirmar el marcador.',
+  errorTitle: 'Error',
+  informationDescription: 'No existen eventos cerca de su ubicación',
+  informationTitle: 'Información',
+  successDescription: 'El marcador fue confirmado con éxito.',
+  successTitle: 'Éxito',
 }

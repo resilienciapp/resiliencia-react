@@ -25,8 +25,21 @@ export const useConfirmMarker = () => {
   const [mutate] = useMutation<Response, MutationConfirmMarkerArgs>(
     ConfirmMarkerMutation,
     {
-      onCompleted: () => displaySuccess([{ title: 'Éxito' }]),
-      onError: error => displayError([{ title: error.message }]),
+      onCompleted: () =>
+        displaySuccess([
+          {
+            description: strings.successDescription,
+            title: strings.successTitle,
+          },
+        ]),
+      onError: () =>
+        displayError([
+          {
+            description: strings.errorDescription,
+            title: strings.successDescription,
+          },
+        ]),
+      refetchQueries: ['markers'],
     },
   )
 
@@ -39,4 +52,11 @@ export const useConfirmMarker = () => {
   }
 
   return { confirmMarker }
+}
+
+const strings = {
+  errorDescription: 'No se pudo confirmar el marcador.',
+  errorTitle: 'Error',
+  successDescription: 'El marcador fue confirmado con éxito.',
+  successTitle: 'Éxito',
 }

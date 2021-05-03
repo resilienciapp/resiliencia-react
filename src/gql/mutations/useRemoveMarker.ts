@@ -25,8 +25,21 @@ export const useRemoveMarker = () => {
   const [mutate] = useMutation<Response, MutationRemoveMarkerArgs>(
     RemoveMarkerMutation,
     {
-      onCompleted: () => displaySuccess([{ title: 'Éxito' }]),
-      onError: error => displayError([{ title: error.message }]),
+      onCompleted: () =>
+        displaySuccess([
+          {
+            description: strings.successDescription,
+            title: strings.successTitle,
+          },
+        ]),
+      onError: () =>
+        displayError([
+          {
+            description: strings.errorDescription,
+            title: strings.successDescription,
+          },
+        ]),
+      refetchQueries: ['markers'],
     },
   )
 
@@ -39,4 +52,11 @@ export const useRemoveMarker = () => {
   }
 
   return { removeMarker }
+}
+
+const strings = {
+  errorDescription: 'No se pudo remover el marcador.',
+  errorTitle: 'Error',
+  successDescription: 'El marcador fue ingresado para ser removido.',
+  successTitle: 'Éxito',
 }
