@@ -2,6 +2,10 @@ import { gql, useQuery } from '@apollo/client'
 import { Marker } from '../../generated/graphql'
 import { MarkerFragment } from '../fragments/marker'
 
+interface Result {
+  markers: Marker[]
+}
+
 const MarkersQuery = gql`
   query markers {
     markers {
@@ -10,9 +14,5 @@ const MarkersQuery = gql`
   }
   ${MarkerFragment}
 `
-
-interface Result {
-  markers: Marker[]
-}
 
 export const useMarkers = () => useQuery<Result>(MarkersQuery)

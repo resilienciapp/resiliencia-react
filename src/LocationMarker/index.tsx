@@ -11,7 +11,7 @@ interface Form {
 }
 
 const initialValues: Form = {
-  description: '',
+  description: undefined,
   name: '',
 }
 
@@ -37,7 +37,7 @@ export const LocationMarker: React.FC = () => {
 
   const onClose = () => {
     setPosition(undefined)
-    initialValues.description = ''
+    initialValues.description = undefined
     initialValues.name = ''
   }
 

@@ -6,7 +6,7 @@ import {
 import { gql, useMutation } from '@apollo/client'
 import { MarkerFragment } from '../fragments/marker'
 
-export interface Response {
+interface Response {
   addMarker: Marker
 }
 
