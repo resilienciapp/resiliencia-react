@@ -3,7 +3,7 @@ import { Formik, FormikHelpers } from 'formik'
 import { Marker, Popup, useMapEvents } from 'react-leaflet'
 import React, { useState } from 'react'
 import { LatLng } from 'leaflet'
-import { useAddMarker } from '../gql/mutations/useAddMarker'
+import { useAddMarker } from '../../gql/mutations/useAddMarker'
 
 interface Form {
   description?: string
@@ -45,19 +45,18 @@ export const LocationMarker: React.FC = () => {
     return null
   }
 
-  const onSubmit = (values: Form, { setSubmitting }: FormikHelpers<Form>) => {
+  const onSubmit = async (
+    values: Form,
+    { setSubmitting }: FormikHelpers<Form>,
+  ) => {
     setSubmitting(true)
-    addMarker(
-      {
-        ...values,
-        latitude: position?.lat,
-        longitude: position?.lng,
-      },
-      () => {
-        setSubmitting(false)
-        setPosition(undefined)
-      },
-    )
+    await addMarker({
+      ...values,
+      latitude: position?.lat,
+      longitude: position?.lng,
+    })
+    setSubmitting(false)
+    setPosition(undefined)
   }
 
   return (

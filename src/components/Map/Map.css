@@ -1,0 +1,12 @@
+.marker-popup {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.marker-popup-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}

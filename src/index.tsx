@@ -1,14 +1,17 @@
+import React, { StrictMode } from 'react'
 import { ApolloProvider } from '@apollo/client'
 import { Body } from './Body'
-import React from 'react'
+import { ErrorProvider } from './components/ErrorProvider'
 import ReactDOM from 'react-dom'
 import { getClient } from './apollo'
 
 ReactDOM.render(
-  <React.StrictMode>
+  <StrictMode>
     <ApolloProvider client={getClient()}>
-      <Body />
+      <ErrorProvider>
+        <Body />
+      </ErrorProvider>
     </ApolloProvider>
-  </React.StrictMode>,
+  </StrictMode>,
   document.getElementById('root'),
 )
