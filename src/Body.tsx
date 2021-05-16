@@ -1,8 +1,10 @@
 import './Body.css'
-import { Map } from './components/Map'
+
 import React from 'react'
-import { Toast } from './components/Toast'
+
 import { useError } from './components/ErrorProvider'
+import { Map } from './components/Map'
+import { Toast } from './components/Toast'
 
 export const Body: React.FC = () => {
   const { errors } = useError()

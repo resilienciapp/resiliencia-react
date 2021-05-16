@@ -1,16 +1,17 @@
+import { noop } from 'lodash'
 import React, {
-  FunctionComponent,
   createContext,
+  FunctionComponent,
   useCallback,
   useContext,
   useState,
 } from 'react'
-import { Color } from '../style'
+
 import errorIcon from '../assets/error.svg'
 import informationIcon from '../assets/information.svg'
-import { noop } from 'lodash'
 import successIcon from '../assets/success.svg'
 import warningIcon from '../assets/warning.svg'
+import { Color } from '../style'
 
 type CallableFunction = (messages: Message[]) => void
 

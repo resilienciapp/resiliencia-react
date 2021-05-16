@@ -1,9 +1,9 @@
 import './LocationMarker.css'
+
 import { Formik, FormikHelpers } from 'formik'
-import { Marker, Popup, useMapEvents } from 'react-leaflet'
-import React, { useState } from 'react'
 import { LatLng } from 'leaflet'
-import { useAddMarker } from '../../gql/mutations/useAddMarker'
+import React, { useState } from 'react'
+import { Marker, Popup, useMapEvents } from 'react-leaflet'
 
 interface Form {
   description?: string
@@ -25,8 +25,6 @@ const validate = (values: Form) => {
 
 export const LocationMarker: React.FC = () => {
   const [position, setPosition] = useState<LatLng>()
-
-  const { addMarker } = useAddMarker()
 
   const map = useMapEvents({
     click(event) {
@@ -50,11 +48,6 @@ export const LocationMarker: React.FC = () => {
     { setSubmitting }: FormikHelpers<Form>,
   ) => {
     setSubmitting(true)
-    await addMarker({
-      ...values,
-      latitude: position?.lat,
-      longitude: position?.lng,
-    })
     setSubmitting(false)
     setPosition(undefined)
   }

@@ -1,14 +1,11 @@
 import { gql, useQuery } from '@apollo/client'
-import { Marker } from '../../generated/graphql'
-import { MarkerFragment } from '../fragments/marker'
-import { useError } from '../../components/ErrorProvider'
 
-interface Result {
-  markers: Marker[]
-}
+import { useError } from '../../components/ErrorProvider'
+import { MarkerFragment } from '../fragments/marker'
+import { MarkersQuery as MarkersQueryData } from '../types'
 
 const MarkersQuery = gql`
-  query markers {
+  query MarkersQuery {
     markers {
       ...Marker
     }
@@ -18,7 +15,7 @@ const MarkersQuery = gql`
 
 export const useMarkers = () => {
   const { displayError, displayInformation, displaySuccess } = useError()
-  const { data } = useQuery<Result>(MarkersQuery, {
+  const { data } = useQuery<MarkersQueryData>(MarkersQuery, {
     onCompleted: data =>
       data.markers.length
         ? displaySuccess([
