@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 
+import { strings as commonStrings } from '../../common/strings'
 import { useError } from '../../components/ErrorProvider'
 import { MarkerFragment } from '../fragments/marker'
 import { MarkersQuery as MarkersQueryData } from '../types'
@@ -20,21 +21,21 @@ export const useMarkers = () => {
       data.markers.length
         ? displaySuccess([
             {
-              description: strings.successDescription,
-              title: strings.successTitle,
+              description: strings.success,
+              title: commonStrings.success,
             },
           ])
         : displayInformation([
             {
-              description: strings.informationDescription,
-              title: strings.informationTitle,
+              description: strings.information,
+              title: commonStrings.information,
             },
           ]),
     onError: () =>
       displayError([
         {
-          description: strings.errorDescription,
-          title: strings.successDescription,
+          description: strings.error,
+          title: commonStrings.error,
         },
       ]),
   })
@@ -43,10 +44,7 @@ export const useMarkers = () => {
 }
 
 const strings = {
-  errorDescription: 'No se pudo confirmar el marcador.',
-  errorTitle: 'Error',
-  informationDescription: 'No existen eventos cerca de su ubicación',
-  informationTitle: 'Información',
-  successDescription: 'El marcador fue confirmado con éxito.',
-  successTitle: 'Éxito',
+  error: 'Error al obtener los eventos.',
+  information: 'No existen eventos cerca de su ubicación.',
+  success: 'Eventos descargados con éxito.',
 }
