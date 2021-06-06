@@ -1,14 +1,17 @@
 import './Map.css'
 
 import { LatLngExpression } from 'leaflet'
-import React from 'react'
+import React, { useState } from 'react'
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
 
 import { useMarkers } from '../../gql/queries/useMarkers'
+import { Marker as MarkerEntity } from '../../gql/types'
 import { LocationMarker } from '../LocationMarker'
 
 export const Map: React.FC = () => {
-  const data = useMarkers()
+  const [markers, setMarkers] = useState<MarkerEntity[]>([])
+
+  useMarkers(setMarkers)
 
   return (
     <MapContainer
@@ -21,8 +24,8 @@ export const Map: React.FC = () => {
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <LocationMarker />
-      {data?.markers.map(marker => (
+      <LocationMarker saveMarkers={setMarkers} />
+      {markers.map(marker => (
         <Marker
           key={marker.id}
           position={[marker.latitude, marker.longitude]}

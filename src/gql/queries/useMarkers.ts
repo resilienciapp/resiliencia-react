@@ -14,23 +14,27 @@ const MarkersQuery = gql`
   ${MarkerFragment}
 `
 
-export const useMarkers = () => {
+export const useMarkers = (setMarkers: CallableFunction) => {
   const { displayError, displayInformation, displaySuccess } = useError()
   const { data } = useQuery<MarkersQueryData>(MarkersQuery, {
-    onCompleted: data =>
-      data.markers.length
-        ? displaySuccess([
-            {
-              description: strings.success,
-              title: commonStrings.success,
-            },
-          ])
-        : displayInformation([
-            {
-              description: strings.information,
-              title: commonStrings.information,
-            },
-          ]),
+    onCompleted: data => {
+      if (data.markers.length) {
+        setMarkers(data.markers)
+        displaySuccess([
+          {
+            description: strings.success,
+            title: commonStrings.success,
+          },
+        ])
+      } else {
+        displayInformation([
+          {
+            description: strings.information,
+            title: commonStrings.information,
+          },
+        ])
+      }
+    },
     onError: () =>
       displayError([
         {
