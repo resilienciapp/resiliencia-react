@@ -1,12 +1,11 @@
-import './Map.css'
-
 import { LatLngExpression } from 'leaflet'
 import React, { useState } from 'react'
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import { MapContainer, TileLayer } from 'react-leaflet'
 
 import { useMarkers } from '../../gql/queries/useMarkers'
 import { Marker as MarkerEntity } from '../../gql/types'
 import { LocationMarker } from '../LocationMarker'
+import { Marker } from './Marker'
 
 export const Map: React.FC = () => {
   const [markers, setMarkers] = useState<MarkerEntity[]>([])
@@ -26,17 +25,7 @@ export const Map: React.FC = () => {
       />
       <LocationMarker saveMarkers={setMarkers} />
       {markers.map(marker => (
-        <Marker
-          key={marker.id}
-          position={[marker.latitude, marker.longitude]}
-          title={marker.name}>
-          <Popup>
-            <div className="marker-popup-container">
-              <span>{marker.name}</span>
-              <div className=".marker-popup-container"></div>
-            </div>
-          </Popup>
-        </Marker>
+        <Marker key={marker.id} {...marker} />
       ))}
     </MapContainer>
   )

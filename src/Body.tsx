@@ -1,5 +1,3 @@
-import './Body.css'
-
 import React from 'react'
 
 import { useError } from './components/ErrorProvider'
@@ -10,7 +8,7 @@ export const Body: React.FC = () => {
   const { errors } = useError()
 
   return (
-    <div className="body-container">
+    <div style={styles.container}>
       <Toast
         autoDelete={true}
         dismissTime={4000}
@@ -20,4 +18,16 @@ export const Body: React.FC = () => {
       <Map />
     </div>
   )
+}
+
+const styles: Record<string, React.CSSProperties> = {
+  container: {
+    bottom: 0,
+    left: 0,
+    margin: 0,
+    padding: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
 }

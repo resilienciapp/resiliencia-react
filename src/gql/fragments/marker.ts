@@ -4,11 +4,11 @@ import { CategoryFragment } from './category'
 
 export const MarkerFragment = gql`
   fragment Marker on Marker {
-    active
     category {
       ...Category
     }
     description
+    duration
     expiresAt
     id
     latitude

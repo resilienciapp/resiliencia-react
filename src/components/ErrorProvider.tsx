@@ -52,7 +52,7 @@ export const ErrorProvider: FunctionComponent = ({ children }) => {
       (message, index) =>
         ({
           ...message,
-          backgroundColor: Color.Error,
+          backgroundColor: Color.Reddish,
           icon: errorIcon,
           id: index,
         } as DisplayableMessage),
@@ -65,7 +65,7 @@ export const ErrorProvider: FunctionComponent = ({ children }) => {
       (message, index) =>
         ({
           ...message,
-          backgroundColor: Color.Information,
+          backgroundColor: Color.Peafowl,
           icon: informationIcon,
           id: index,
         } as DisplayableMessage),
@@ -78,7 +78,7 @@ export const ErrorProvider: FunctionComponent = ({ children }) => {
       (message, index) =>
         ({
           ...message,
-          backgroundColor: Color.Success,
+          backgroundColor: Color.LimeGreen,
           icon: successIcon,
           id: index,
         } as DisplayableMessage),
@@ -91,7 +91,7 @@ export const ErrorProvider: FunctionComponent = ({ children }) => {
       (message, index) =>
         ({
           ...message,
-          backgroundColor: Color.Warning,
+          backgroundColor: Color.BrightOrange,
           icon: warningIcon,
           id: index,
         } as DisplayableMessage),

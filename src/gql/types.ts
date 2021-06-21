@@ -14,9 +14,9 @@ export interface AddMarkerMutation_addMarker_category {
 }
 
 export interface AddMarkerMutation_addMarker {
-  active: boolean;
   category: AddMarkerMutation_addMarker_category;
   description: string | null;
+  duration: number;
   expiresAt: any | null;
   id: number;
   latitude: number;
@@ -68,9 +68,9 @@ export interface MarkersQuery_markers_category {
 }
 
 export interface MarkersQuery_markers {
-  active: boolean;
   category: MarkersQuery_markers_category;
   description: string | null;
+  duration: number;
   expiresAt: any | null;
   id: number;
   latitude: number;
@@ -114,9 +114,9 @@ export interface Marker_category {
 }
 
 export interface Marker {
-  active: boolean;
   category: Marker_category;
   description: string | null;
+  duration: number;
   expiresAt: any | null;
   id: number;
   latitude: number;
@@ -137,6 +137,7 @@ export interface Marker {
 export interface AddMarkerInput {
   category: number;
   description?: string | null;
+  duration: number;
   expiresAt?: any | null;
   latitude: number;
   longitude: number;

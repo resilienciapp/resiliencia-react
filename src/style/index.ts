@@ -1,6 +1,11 @@
 export enum Color {
-  Error = '#F44336',
-  Information = '#2196F3',
-  Success = '#4CAF50',
-  Warning = '#FF9800',
+  Black = '#000000',
+  BrightOrange = '#EB912A',
+  LightGray = '#B1B3BA',
+  LimeGreen = '#4CAF50',
+  Peafowl = '#1D7CF2',
+  Reddish = '#D23030',
+  Steel = '#898C92',
+  Transparent = 'transparent',
+  White = '#FFFFFF',
 }

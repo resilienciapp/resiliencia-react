@@ -1,0 +1,29 @@
+label > input[type='checkbox'] {
+  display: none;
+}
+
+label > input[type='checkbox'] + *::before {
+  align-items: center;
+  border-color: #898c92;
+  border-radius: 3px;
+  border-style: solid;
+  border-width: 1px;
+  content: '';
+  display: flex;
+  height: 0.75rem;
+  justify-content: center;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+  width: 0.75rem;
+}
+
+label > input[type='checkbox']:checked + *::before {
+  background: #898c92;
+  border-color: #898c92;
+  color: #ffffff;
+  content: '✓';
+}
+
+label > input[type='checkbox']:required + *::before {
+  border-color: #d23030;
+}
