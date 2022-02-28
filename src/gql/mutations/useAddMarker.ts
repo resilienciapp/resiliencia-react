@@ -38,6 +38,7 @@ export const useAddMarker = () => {
           title: commonStrings.error,
         },
       ]),
+    refetchQueries: ['MarkersQuery'],
   })
 
   return {

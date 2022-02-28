@@ -1,11 +1,13 @@
 export const strings = {
   category: 'Categoría',
+  date: 'Fecha',
   days: 'Días',
   description: 'Descripción',
-  end: 'Duración (minutos)',
+  endTime: 'Hora fin',
   error: 'Error',
   information: 'Información',
   name: 'Nombre',
-  startTime: 'Hora',
+  schedule: 'Horario',
+  startTime: 'Hora inicio',
   success: 'Éxito',
 }

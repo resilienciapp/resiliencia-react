@@ -12,7 +12,6 @@ label > input[type='checkbox'] + *::before {
   display: flex;
   height: 0.75rem;
   justify-content: center;
-  margin-left: 0.25rem;
   margin-right: 0.25rem;
   width: 0.75rem;
 }

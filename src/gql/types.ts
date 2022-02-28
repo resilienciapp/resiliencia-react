@@ -8,6 +8,7 @@
 // ====================================================
 
 export interface AddMarkerMutation_addMarker_category {
+  color: string;
   description: string | null;
   id: number;
   name: string;
@@ -26,7 +27,7 @@ export interface AddMarkerMutation_addMarker {
 }
 
 export interface AddMarkerMutation {
-  addMarker: AddMarkerMutation_addMarker[];
+  addMarker: AddMarkerMutation_addMarker;
 }
 
 export interface AddMarkerMutationVariables {
@@ -43,6 +44,7 @@ export interface AddMarkerMutationVariables {
 // ====================================================
 
 export interface CategoriesQuery_categories {
+  color: string;
   description: string | null;
   id: number;
   name: string;
@@ -62,6 +64,7 @@ export interface CategoriesQuery {
 // ====================================================
 
 export interface MarkersQuery_markers_category {
+  color: string;
   description: string | null;
   id: number;
   name: string;
@@ -93,6 +96,7 @@ export interface MarkersQuery {
 // ====================================================
 
 export interface Category {
+  color: string;
   description: string | null;
   id: number;
   name: string;
@@ -108,6 +112,7 @@ export interface Category {
 // ====================================================
 
 export interface Marker_category {
+  color: string;
   description: string | null;
   id: number;
   name: string;
@@ -143,6 +148,7 @@ export interface AddMarkerInput {
   longitude: number;
   name: string;
   recurrence: string;
+  timeZone: string;
 }
 
 //==============================================================
