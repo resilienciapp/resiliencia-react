@@ -1,12 +1,19 @@
 import * as Leaflet from 'leaflet'
 import { clamp, groupBy, identity, isNumber } from 'lodash'
-import React, { useEffect, useRef, useState } from 'react'
-import { LayersControl, MapContainer, TileLayer } from 'react-leaflet'
+import React, { useRef, useState } from 'react'
+import {
+  LayerGroup,
+  LayersControl,
+  MapContainer,
+  TileLayer,
+} from 'react-leaflet'
 
 import add from '../../assets/add.svg'
+import file_download from '../../assets/file_download.svg'
 import { ReactComponent as ArrowDown } from '../../assets/keyboard_arrow_down.svg'
 import { ReactComponent as ArrowUp } from '../../assets/keyboard_arrow_up.svg'
 import { useMarkers } from '../../gql/queries/useMarkers'
+import { useMarkersAnalytics } from '../../gql/queries/useMarkersAnalytics'
 import { Marker as MarkerEntity } from '../../gql/types'
 import { Color } from '../../style'
 import { Checkbox } from '../Checkbox'
@@ -26,79 +33,133 @@ interface HeatMap {
   radius: number
 }
 
+interface MarkerGroup {
+  checked: boolean
+  markers: MarkerEntity[]
+  name: string
+}
+
+const getDefaultConfig = () => ({
+  checked: false,
+  gradient: {
+    0.5: Color.LimeGreen,
+    0.75: Color.Yellow,
+    1: Color.Reddish,
+  },
+  radius: 25,
+})
+
 export const Map: React.FC = () => {
   const inputFile = useRef<HTMLInputElement>(null)
 
-  const [markers, setMarkers] = useState<MarkerEntity[]>([])
-
+  const [editionHeatMapInfo, setEditionHeatMapInfo] = useState<HeatMap[]>([])
+  const [markerGroups, setMarkerGroups] = useState<MarkerGroup[]>([])
+  const [heatMapInfo, setHeatMapInfo] = useState<HeatMap[]>([])
   const [heatMapPoints, setHeatMapPoints] = useState<
     Leaflet.HeatLatLngTuple[][]
   >([])
 
-  const [heatMapInfo, setHeatMapInfo] = useState<HeatMap[]>([
-    {
-      checked: false,
-      gradient: {
-        0.5: Color.LimeGreen,
-        0.75: Color.Yellow,
-        1: Color.Reddish,
-      },
-      name: 'Mapa de calor de eventos',
-      radius: 25,
-    },
-  ])
+  const { getMarkersAnalyticsData } = useMarkersAnalytics()
 
-  useMarkers(setMarkers)
+  const storeMarkers = (markers: MarkerEntity[]) => {
+    const newHeatMapPoints: Leaflet.HeatLatLngTuple[][] = [[]]
+    const newHeatMapInfo: HeatMap[] = [{ ...getDefaultConfig(), name: 'Todos' }]
+    const groups = groupBy(markers, 'category.name')
 
-  useEffect(() => {
-    const newHeatMapPoints = [...heatMapPoints]
+    const markerGroups = Object.keys(groups).map(key => ({
+      checked: true,
+      markers: groups[key],
+      name: key,
+    }))
 
-    newHeatMapPoints[0] = markers.map(({ latitude, longitude }) => [
-      latitude,
-      longitude,
-      0.1,
-    ])
+    markerGroups.forEach(({ markers, name }) => {
+      newHeatMapInfo.push({ ...getDefaultConfig(), name })
 
+      const points: Leaflet.HeatLatLngTuple[] = markers.map(
+        ({ latitude, longitude }) => [latitude, longitude, 1],
+      )
+
+      newHeatMapPoints[0] = newHeatMapPoints[0].concat(points)
+      newHeatMapPoints.push(points)
+    })
+
+    setHeatMapInfo(newHeatMapInfo)
     setHeatMapPoints(newHeatMapPoints)
-  }, [markers.length])
+    setMarkerGroups(markerGroups)
+  }
+
+  useMarkers(storeMarkers)
 
   const toggleHeatMap = (index: number) => () => {
     const newHeatMapInfo = [...heatMapInfo]
-
     newHeatMapInfo[index].checked = !newHeatMapInfo[index].checked
-
     setHeatMapInfo(newHeatMapInfo)
+
+    if (editionHeatMapInfo.length !== 0) {
+      const newEditionHeatMapInfo = [...editionHeatMapInfo]
+      newEditionHeatMapInfo[index].checked =
+        !newEditionHeatMapInfo[index].checked
+      setEditionHeatMapInfo(newEditionHeatMapInfo)
+    }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const changeRadius = (index: number) => (event: any) => {
     const radius = Number(event.target.value)
 
-    if (!isNumber(radius)) {
+    if (!isNumber(radius) || isNaN(radius)) {
       return
     }
 
+    const newRadius = clamp(radius, 0, 100)
+
     const newHeatMapInfo = [...heatMapInfo]
-
-    newHeatMapInfo[index].radius = clamp(radius, 0, 100)
-
+    newHeatMapInfo[index].radius = newRadius
     setHeatMapInfo(newHeatMapInfo)
+
+    if (editionHeatMapInfo.length !== 0) {
+      const newEditionHeatMapInfo = [...editionHeatMapInfo]
+      newEditionHeatMapInfo[index].radius = newRadius
+      setEditionHeatMapInfo(newEditionHeatMapInfo)
+    }
   }
 
   const changeGradient =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (index: number, key: 0.5 | 0.75 | 1) => (event: any) => {
       const newHeatMapInfo = [...heatMapInfo]
 
-      newHeatMapInfo[index].gradient[key] = event.target.value
+      newHeatMapInfo[index] = {
+        ...newHeatMapInfo[index],
+        gradient: {
+          ...newHeatMapInfo[index].gradient,
+          [key]: event.target.value,
+        },
+      }
 
-      setHeatMapInfo(newHeatMapInfo)
+      setEditionHeatMapInfo(newHeatMapInfo)
     }
 
-  const groupedMarkers = groupBy(markers, 'category.name')
+  const onBlur = () => {
+    if (editionHeatMapInfo.length) {
+      const hasErrors = editionHeatMapInfo.find(element =>
+        Object.values(element.gradient).find(
+          color => !/^#[0-9A-F]{6}$/i.test(color),
+        ),
+      )
 
-  const onButtonClick = () => {
+      if (!hasErrors) {
+        setHeatMapInfo(editionHeatMapInfo)
+        setEditionHeatMapInfo([])
+      }
+    }
+  }
+
+  const loadPoints = () => {
     inputFile.current?.click()
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onChange = (event: any) => {
     event.stopPropagation()
     event.preventDefault()
@@ -114,16 +175,7 @@ export const Map: React.FC = () => {
 
           setHeatMapInfo([
             ...heatMapInfo,
-            {
-              checked: false,
-              gradient: {
-                0.5: Color.LimeGreen,
-                0.75: Color.Yellow,
-                1: Color.Reddish,
-              },
-              name: event.target.files[0].name,
-              radius: 25,
-            },
+            { ...getDefaultConfig(), name: event.target.files[0].name },
           ])
           setHeatMapPoints([...heatMapPoints, arrayOfPoints])
         } catch {
@@ -174,99 +226,108 @@ export const Map: React.FC = () => {
 
   return (
     <>
-      <div
-        style={{
-          backgroundColor: 'white',
-          border: '2px solid rgba(0,0,0,0.2)',
-          borderRadius: '5px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          left: 0,
-          marginLeft: '10px',
-          marginTop: '10px',
-          maxWidth: 500,
-          paddingBottom: '8px',
-          paddingLeft: '12px',
-          paddingRight: '12px',
-          paddingTop: '8px',
-          position: 'absolute',
-          top: 75,
-          zIndex: 1000,
-        }}>
-        {heatMapInfo.map(({ checked, gradient, name, radius }, index) => (
-          <div
-            key={index}
-            style={{
-              alignItems: 'center',
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}>
-            <Checkbox
-              checked={checked}
-              contentContainerStyle={{
-                alignSelf: 'flex-end',
-                flex: 1,
-                paddingBottom: '4px',
-              }}
-              titleStyle={{ fontSize: 13 }}
-              label={name}
-              onChange={toggleHeatMap(index)}
-            />
+      {heatMapInfo.length !== 0 && (
+        <div
+          style={{
+            backgroundColor: 'white',
+            border: '2px solid rgba(0,0,0,0.2)',
+            borderRadius: '5px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            left: 0,
+            marginLeft: '10px',
+            marginTop: '10px',
+            maxWidth: 500,
+            paddingBottom: '8px',
+            paddingLeft: '12px',
+            paddingRight: '12px',
+            paddingTop: '8px',
+            position: 'absolute',
+            top: 75,
+            zIndex: 1000,
+          }}>
+          {(editionHeatMapInfo.length === 0
+            ? heatMapInfo
+            : editionHeatMapInfo
+          ).map(({ checked, gradient, name, radius }, index) => (
             <div
               key={index}
               style={{
+                alignItems: 'center',
                 display: 'flex',
                 flexDirection: 'row',
+                justifyContent: 'space-between',
               }}>
-              <TableElement
-                label="Radio"
-                onChange={changeRadius(index)}
-                style={{ marginLeft: '8px', width: '30px' }}
-                value={radius}
+              <Checkbox
+                checked={checked}
+                contentContainerStyle={{
+                  alignSelf: 'flex-end',
+                  flex: 1,
+                  paddingBottom: '4px',
+                }}
+                titleStyle={{ fontSize: 13 }}
+                label={name}
+                onChange={toggleHeatMap(index)}
               />
               <div
+                key={index}
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
-                  marginLeft: '8px',
-                  marginRight: '8px',
                 }}>
                 <TableElement
-                  label="0.5"
-                  onChange={changeGradient(index, 0.5)}
-                  value={gradient[0.5]}
+                  label="Radio"
+                  onBlur={onBlur}
+                  onChange={changeRadius(index)}
+                  style={{ marginLeft: '8px', width: '30px' }}
+                  value={radius}
                 />
-                <TableElement
-                  label="0.75"
-                  onChange={changeGradient(index, 0.75)}
-                  value={gradient[0.75]}
-                />
-                <TableElement
-                  label="1"
-                  onChange={changeGradient(index, 1)}
-                  value={gradient[1]}
-                />
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    marginLeft: '8px',
+                    marginRight: '8px',
+                  }}>
+                  <TableElement
+                    label="0.5"
+                    onBlur={onBlur}
+                    onChange={changeGradient(index, 0.5)}
+                    value={gradient[0.5]}
+                  />
+                  <TableElement
+                    label="0.75"
+                    onBlur={onBlur}
+                    onChange={changeGradient(index, 0.75)}
+                    value={gradient[0.75]}
+                  />
+                  <TableElement
+                    label="1"
+                    onBlur={onBlur}
+                    onChange={changeGradient(index, 1)}
+                    value={gradient[1]}
+                  />
+                </div>
               </div>
+              <ArrowUp
+                fill={index === 0 ? Color.White : Color.Black}
+                onClick={moveUp(index)}
+                style={{ height: '15px', paddingTop: '15px', width: '15px' }}
+              />
+              <ArrowDown
+                fill={
+                  index === heatMapInfo.length - 1 || heatMapInfo.length === 1
+                    ? Color.White
+                    : Color.Black
+                }
+                onClick={moveDown(index)}
+                style={{ height: '15px', paddingTop: '15px', width: '15px' }}
+              />
             </div>
-            <ArrowUp
-              fill={index === 0 ? Color.White : Color.Black}
-              onClick={moveUp(index)}
-              style={{ height: '15px', paddingTop: '15px', width: '15px' }}
-            />
-            <ArrowDown
-              fill={
-                index === heatMapInfo.length - 1 || heatMapInfo.length === 1
-                  ? Color.White
-                  : Color.Black
-              }
-              onClick={moveDown(index)}
-              style={{ height: '15px', paddingTop: '15px', width: '15px' }}
-            />
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
       <input
         type="file"
         id="file"
@@ -275,7 +336,7 @@ export const Map: React.FC = () => {
         onChange={onChange}
       />
       <div
-        onClick={onButtonClick}
+        onClick={loadPoints}
         style={{
           backgroundColor: 'white',
           border: '2px solid rgba(0,0,0,0.2)',
@@ -292,6 +353,25 @@ export const Map: React.FC = () => {
           zIndex: 1000,
         }}>
         <img alt="" src={add} />
+      </div>
+      <div
+        onClick={() => getMarkersAnalyticsData()}
+        style={{
+          backgroundColor: 'white',
+          border: '2px solid rgba(0,0,0,0.2)',
+          borderRadius: '5px',
+          display: 'flex',
+          height: '37px',
+          left: '50px',
+          marginBottom: '10px',
+          marginRight: '10px',
+          padding: '12px',
+          position: 'absolute',
+          top: '10px',
+          width: '37px',
+          zIndex: 1000,
+        }}>
+        <img alt="" src={file_download} />
       </div>
 
       <MapContainer
@@ -318,18 +398,28 @@ export const Map: React.FC = () => {
             />
           </LayersControl.BaseLayer>
           <LocationMarker />
-          {Object.keys(groupedMarkers).map(key => (
-            <LayersControl.Overlay checked={true} key={key} name={key}>
-              {groupedMarkers[key].map(marker => (
-                <Marker key={marker.id} {...marker} />
-              ))}
+          {markerGroups.map(markerGroup => (
+            <LayersControl.Overlay
+              checked={true}
+              key={markerGroup.name}
+              name={markerGroup.name}>
+              <LayerGroup>
+                {markerGroup.markers.map(marker => (
+                  <Marker key={marker.id} {...marker} />
+                ))}
+              </LayerGroup>
             </LayersControl.Overlay>
           ))}
         </LayersControl>
-
-        {heatMapPoints.map((points, index) => {
-          if (heatMapInfo[index].checked)
-            return <HeatLayer points={points} info={heatMapInfo[index]} />
+        {heatMapInfo.map(({ checked, name }, index) => {
+          if (checked)
+            return (
+              <HeatLayer
+                key={name + checked}
+                points={heatMapPoints[index]}
+                info={heatMapInfo[index]}
+              />
+            )
         })}
       </MapContainer>
     </>

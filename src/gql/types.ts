@@ -92,6 +92,35 @@ export interface MarkersQuery {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: MarkersAnalytics
+// ====================================================
+
+export interface MarkersAnalytics_markersAnalytics {
+  category: string;
+  description: string | null;
+  duration: number;
+  expiresAt: any | null;
+  id: number;
+  latitude: number;
+  longitude: number;
+  name: string;
+  owners: number;
+  recurrence: string;
+  requests: number;
+  subscriptions: number;
+  timeZone: string;
+}
+
+export interface MarkersAnalytics {
+  markersAnalytics: MarkersAnalytics_markersAnalytics[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL fragment: Category
 // ====================================================
 

@@ -4,6 +4,7 @@ import { Color } from '../../style'
 
 interface Props {
   label: string
+  onBlur?: ChangeEventHandler<HTMLInputElement>
   onChange?: ChangeEventHandler<HTMLInputElement>
   style?: CSSProperties
   value: number | string
@@ -11,6 +12,7 @@ interface Props {
 
 export const TableElement: React.FunctionComponent<Props> = ({
   label,
+  onBlur,
   onChange,
   style,
   value,
@@ -24,6 +26,7 @@ export const TableElement: React.FunctionComponent<Props> = ({
     }}>
     <label style={{ fontSize: 12 }}>{label}</label>
     <input
+      onBlur={onBlur}
       onChange={onChange}
       style={{
         color: Color.Steel,
